@@ -71,8 +71,8 @@ O **Tempero e Café** é uma plataforma de e-commerce especializada em produtos 
 ### 1. Clone o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/tempero-e-cafe.git
-cd tempero-e-cafe
+git clone https://github.com/ImotoAkio/cardapio.git
+cd cardapio
 ```
 
 ### 2. Configuração do Banco de Dados
@@ -197,7 +197,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 ## 👥 Equipe
 
-- **Desenvolvedor Principal**: [Seu Nome]
+- **Desenvolvedor Principal**: [ImotoAkio](https://github.com/ImotoAkio)
 - **Design**: [Nome do Designer]
 - **Backend**: [Nome do Backend Dev]
 
@@ -205,7 +205,7 @@ Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para ma
 
 - **Email**: suporte@temperoecafe.com
 - **Documentação**: [Wiki do Projeto](documentacao/)
-- **Issues**: [GitHub Issues](https://github.com/seu-usuario/tempero-e-cafe/issues)
+- **Issues**: [GitHub Issues](https://github.com/ImotoAkio/cardapio/issues)
 
 ## 🔄 Changelog
 

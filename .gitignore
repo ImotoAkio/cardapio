@@ -1,21 +1,101 @@
-/node_modules
-/package-lock.json
-/assets
+# =====================================================
+# 🍃 TEMPERO E CAFÉ - GITIGNORE
+# =====================================================
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
+# Arquivos de configuração local
 .env
-.env.local
-.env.*.local
+config.env
+*.env.local
+*.env.production
 
+# Logs
+logs/
+*.log
+error.log
+access.log
+
+# Cache
+cache/
+tmp/
+temp/
+
+# Uploads de usuários
+dist/img/uploads/
+dist/img/product/
+dist/img/category/
+uploads/
+
+# Arquivos de sessão
+sessions/
+
+# Arquivos de backup
+*.sql
+*.bak
+*.backup
+
+# Arquivos de IDE
 .vscode/
 .idea/
 *.swp
+*.swo
+*~
 
+# Arquivos do sistema
 .DS_Store
 Thumbs.db
+desktop.ini
 
-*.tmp
-*.temp
+# Arquivos de dependências
+vendor/
+node_modules/
+
+# Arquivos de build
+build/
+dist/build/
+
+# Arquivos de teste
+tests/
+test/
+*test*.php
+*Test*.php
+
+# Arquivos de documentação temporária
+*.md.tmp
+*.md.bak
+
+# Arquivos de configuração específicos do servidor
+.htaccess.local
+nginx.conf.local
+
+# Arquivos de SSL
+ssl/
+*.pem
+*.key
+*.crt
+
+# Arquivos de Docker
+docker-compose.override.yml
+.dockerignore
+
+# Arquivos de CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Arquivos de monitoramento
+monitoring/
+stats/
+
+# Arquivos de backup automático
+backup/
+backups/
+
+# Arquivos de cache do PHP
+*.cache
+opcache/
+
+# Arquivos de sessão PHP
+sess_*
+
+# Arquivos de upload temporário
+php_upload_*

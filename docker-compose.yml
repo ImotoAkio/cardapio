@@ -1,0 +1,80 @@
+# =====================================================
+# 🍃 TEMPERO E CAFÉ - DOCKER COMPOSE
+# =====================================================
+
+version: '3.8'
+
+services:
+  # Aplicação PHP
+  app:
+    build: .
+    container_name: tempero-cafe-app
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - .:/var/www/html
+      - ./logs:/var/www/html/logs
+      - ./dist/img:/var/www/html/dist/img
+    environment:
+      - DB_HOST=db
+      - DB_NAME=cardapio
+      - DB_USER=root
+      - DB_PASS=rootpassword
+      - APP_ENV=production
+      - APP_DEBUG=false
+    depends_on:
+      - db
+    networks:
+      - tempero-cafe-network
+
+  # Banco de dados MySQL
+  db:
+    image: mysql:8.0
+    container_name: tempero-cafe-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=cardapio
+      - MYSQL_USER=cardapio
+      - MYSQL_PASSWORD=cardapio123
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    networks:
+      - tempero-cafe-network
+
+  # Redis para cache (opcional)
+  redis:
+    image: redis:7-alpine
+    container_name: tempero-cafe-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - tempero-cafe-network
+
+  # Nginx como proxy reverso (opcional)
+  nginx:
+    image: nginx:alpine
+    container_name: tempero-cafe-nginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - app
+    networks:
+      - tempero-cafe-network
+
+volumes:
+  mysql_data:
+  redis_data:
+
+networks:
+  tempero-cafe-network:
+    driver: bridge

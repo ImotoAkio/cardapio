@@ -1,0 +1,52 @@
+{
+    "name": "imotoakio/cardapio",
+    "description": "Sistema de cardápio online Tempero e Café - E-commerce com PWA",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Tempero e Café",
+            "email": "contato@temperoecafe.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-fileinfo": "*",
+        "ext-gd": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "TemperoCafe\\": "src/"
+        },
+        "files": [
+            "includes/database.php",
+            "includes/n8n_helper.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TemperoCafe\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "post-install-cmd": [
+            "@php -r \"if (!file_exists('.env')) { copy('.env.example', '.env'); }\""
+        ]
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "prefer-stable": true,
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
