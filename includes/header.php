@@ -24,14 +24,14 @@ if ($isLoggedIn) {
 <div class="header-area" id="headerArea">
     <div class="container h-100 d-flex align-items-center justify-content-between d-flex rtl-flex-d-row-r">
         <!-- Logo Wrapper -->
-        <div class="logo-wrapper"><a href="home.php"><img src="dist/img/core-img/logo_cafe.png" alt="Tempero e Café"></a></div>
+        <div class="logo-wrapper"><a href="home.php"><img src="<?php echo getBasePath(); ?>dist/img/core-img/logo_cafe.png" alt="Tempero e Café"></a></div>
         <div class="navbar-logo-container d-flex align-items-center">
             <!-- Cart Icon -->
             <div class="cart-icon-wrap"><a href="cart.php"><i class="ti ti-basket-bolt"></i><span class="cart-count"><?php echo $cartCount; ?></span></a></div>
             
             <?php if ($isLoggedIn && $user): ?>
                 <!-- User Profile Icon (Logado) -->
-                <div class="user-profile-icon ms-2"><a href="profile.php"><img src="dist/img/bg-img/user/<?php echo htmlspecialchars($user['avatar'] ?? '1.png'); ?>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;"></a></div>
+                <div class="user-profile-icon ms-2"><a href="profile.php"><img src="<?php echo getBasePath(); ?>dist/img/bg-img/user/<?php echo htmlspecialchars($user['avatar'] ?? '1.png'); ?>" alt="Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff;"></a></div>
             <?php else: ?>
                 <!-- Login Icon (Não logado) -->
                 <div class="user-profile-icon ms-2"><a href="login.php"><i class="ti ti-login" style="font-size: 24px; color: #fff;"></i></a></div>
@@ -54,7 +54,7 @@ if ($isLoggedIn) {
         <?php if ($isLoggedIn && $user): ?>
             <!-- Sidenav Profile (Logado) -->
             <div class="sidenav-profile">
-                <div class="user-profile"><img src="dist/img/bg-img/user/<?php echo htmlspecialchars($user['avatar'] ?? '1.png'); ?>" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #fff;"></div>
+                <div class="user-profile"><img src="<?php echo getBasePath(); ?>dist/img/bg-img/user/<?php echo htmlspecialchars($user['avatar'] ?? '1.png'); ?>" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #fff;"></div>
                 <div class="user-info">
                     <h5 class="user-name mb-1 text-white"><?php echo htmlspecialchars($user['full_name']); ?></h5>
                     <p class="available-balance text-white">Saldo Atual R$<span class="counter">0,00</span></p>

@@ -179,15 +179,8 @@ function getBasePath() {
     $documentRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
     $currentDir = __DIR__;
     
-    // Se o projeto está em uma subpasta (ex: /cardapio/)
-    if (strpos($scriptName, '/cardapio/') !== false) {
-        return '/cardapio/'; // Projeto está em /cardapio/
-    }
-    
-    // Detectar se estamos em uma subpasta baseado no diretório atual
-    if (strpos($currentDir, 'cardapio') !== false) {
-        return '/cardapio/'; // Projeto está em /cardapio/
-    }
+    // Para hospedagem, sempre retornar caminho relativo à raiz
+    // O projeto está na raiz do domínio (https://cardapio.echo.dev.br/)
     
     // Se estamos na raiz do projeto (home.php está na raiz)
     if (basename($scriptName) === 'home.php' || basename($scriptName) === 'index.php') {

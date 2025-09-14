@@ -68,7 +68,7 @@ session_start();
     <div class="toast pwa-install-alert shadow bg-white" id="installWrap" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000" data-bs-autohide="false">
       <div class="toast-body">
         <div class="content d-flex align-items-center mb-2">
-          <img src="dist/img/icons/android-icon-72x72.png" alt="" style="width: 40px; height: 40px; margin-right: 10px;">
+          <img src="<?php echo getBasePath(); ?>dist/img/icons/android-icon-72x72.png" alt="" style="width: 40px; height: 40px; margin-right: 10px;">
           <h6 class="mb-0">Bem-vindo ao Tempero e Café</h6>
           <button class="btn-close ms-auto" type="button" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
@@ -305,7 +305,7 @@ session_start();
             <div class="col-9">
               <h5 class="text-white">20% de desconto em produtos orgânicos.</h5><a class="btn btn-primary" href="#">Aproveite esta oferta</a>
             </div>
-          </div><img src="dist/img/bg-img/make-up.png" alt="">
+          </div><img src="<?php echo getBasePath(); ?>dist/img/bg-img/make-up.png" alt="">
         </div>
       </div>
       <!-- Weekly Best Sellers-->
@@ -374,7 +374,7 @@ session_start();
       <div class="container">
         <div class="discount-coupon-card p-4 p-lg-5 dir-rtl">
           <div class="d-flex align-items-center">
-            <div class="discountIcon"><img class="w-100" src="dist/img/core-img/discount.png" alt=""></div>
+            <div class="discountIcon"><img class="w-100" src="<?php echo getBasePath(); ?>dist/img/core-img/discount.png" alt=""></div>
             <div class="text-content">
               <h5 class="text-white mb-2"><?php echo $mainCoupon['name']; ?>!</h5>
               <p class="text-white mb-0"><?php echo $mainCoupon['description']; ?><span class="px-1 fw-bold"><?php echo $mainCoupon['code']; ?></span>na página de checkout.</p>
