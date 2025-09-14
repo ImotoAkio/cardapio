@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste PWA Chrome - Tempero e Café</title>
+    <link rel="manifest" href="dist/manifest-minimal.json">
+    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .log {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .btn-test {
+            margin: 5px;
+        }
+        .requirement {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #ccc;
+        }
+        .requirement.ok { border-left-color: green; background: #f0fff0; }
+        .requirement.error { border-left-color: red; background: #fff0f0; }
+        .requirement.warning { border-left-color: orange; background: #fff8f0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Teste PWA Chrome</h1>
+    
+    <div class="test-section">
+        <h3>📋 Requisitos PWA</h3>
+        <div id="requirements"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📱 Informações</h3>
+        <div id="info" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📋 Log de Eventos</h3>
+        <div id="log" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 Testes</h3>
+        <button id="testManifestBtn" class="btn btn-info btn-test">Testar Manifest</button>
+        <button id="testIconsBtn" class="btn btn-warning btn-test">Testar Ícones</button>
+        <button id="testServiceWorkerBtn" class="btn btn-secondary btn-test">Testar Service Worker</button>
+        <button id="clearLogBtn" class="btn btn-danger btn-test">Limpar Log</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 Botão de Instalação</h3>
+        <button id="installBtn" class="btn btn-success w-100">Instalar Agora</button>
+    </div>
+
+    <script src="dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let deferredPrompt;
+        let logElement = document.getElementById('log');
+        let infoElement = document.getElementById('info');
+        let requirementsElement = document.getElementById('requirements');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function addRequirement(name, status, details = '') {
+            const div = document.createElement('div');
+            div.className = `requirement ${status}`;
+            div.innerHTML = `
+                <strong>${name}:</strong> 
+                <span style="color: ${status === 'ok' ? 'green' : status === 'error' ? 'red' : 'orange'}; font-weight: bold;">
+                    ${status === 'ok' ? '✅' : status === 'error' ? '❌' : '⚠️'} ${status.toUpperCase()}
+                </span>
+                ${details ? `<br><small>${details}</small>` : ''}
+            `;
+            requirementsElement.appendChild(div);
+        }
+        
+        function updateInfo() {
+            const info = `
+URL: ${location.href}
+Protocol: ${location.protocol}
+Hostname: ${location.hostname}
+Pathname: ${location.pathname}
+Standalone: ${window.navigator.standalone}
+Display Mode: ${window.matchMedia('(display-mode: standalone)').matches}
+Service Worker Support: ${'serviceWorker' in navigator}
+Cache API Support: ${'caches' in window}
+Before Install Prompt: ${deferredPrompt ? 'Available' : 'Not Available'}
+Chrome Version: ${navigator.userAgent.match(/Chrome\/(\d+)/)?.[1] || 'Unknown'}
+            `;
+            infoElement.textContent = info;
+        }
+        
+        function checkPWARequirements() {
+            // 1. HTTPS ou localhost
+            const isSecure = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.hostname.match(/^192\.168\./);
+            addRequirement('HTTPS/Localhost', isSecure ? 'ok' : 'error', 
+                isSecure ? 'Conexão segura' : 'Necessário HTTPS ou localhost');
+            
+            // 2. Service Worker
+            const hasServiceWorker = 'serviceWorker' in navigator;
+            addRequirement('Service Worker Support', hasServiceWorker ? 'ok' : 'error');
+            
+            // 3. Cache API
+            const hasCacheAPI = 'caches' in window;
+            addRequirement('Cache API Support', hasCacheAPI ? 'ok' : 'error');
+            
+            // 4. Manifest
+            const hasManifest = document.querySelector('link[rel="manifest"]');
+            addRequirement('Manifest Link', hasManifest ? 'ok' : 'error');
+            
+            // 5. Ícones
+            const hasIcons = document.querySelector('link[rel="icon"]') || document.querySelector('link[rel="apple-touch-icon"]');
+            addRequirement('Favicon/Icons', hasIcons ? 'ok' : 'warning', 'Verificar se ícones estão acessíveis');
+            
+            // 6. Display mode
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            addRequirement('Display Mode', isStandalone ? 'ok' : 'warning', 
+                isStandalone ? 'App já instalado' : 'App não instalado');
+            
+            // 7. Before Install Prompt
+            addRequirement('Before Install Prompt', deferredPrompt ? 'ok' : 'error', 
+                deferredPrompt ? 'PWA instalável' : 'PWA não instalável');
+            
+            // 8. Chrome Version
+            const chromeVersion = navigator.userAgent.match(/Chrome\/(\d+)/)?.[1];
+            const isChromeSupported = chromeVersion && parseInt(chromeVersion) >= 68;
+            addRequirement('Chrome Version', isChromeSupported ? 'ok' : 'warning', 
+                `Versão: ${chromeVersion || 'Unknown'} (mínimo: 68)`);
+        }
+        
+        // Event listeners
+        window.addEventListener('beforeinstallprompt', (e) => {
+            log('✅ beforeinstallprompt event fired!');
+            e.preventDefault();
+            deferredPrompt = e;
+            updateInfo();
+            checkPWARequirements();
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            log('✅ App installed successfully!');
+            updateInfo();
+        });
+        
+        // Test buttons
+        document.getElementById('testManifestBtn').addEventListener('click', async () => {
+            log('🧪 Testing Manifest...');
+            try {
+                const response = await fetch('dist/manifest-minimal.json');
+                const manifest = await response.json();
+                log('✅ Manifest loaded successfully');
+                log(`📱 App name: ${manifest.name}`);
+                log(`📱 Start URL: ${manifest.start_url}`);
+                log(`📱 Display: ${manifest.display}`);
+                log(`📱 Icons count: ${manifest.icons.length}`);
+                
+                // Test each icon
+                for (const icon of manifest.icons) {
+                    try {
+                        const iconResponse = await fetch(icon.src);
+                        if (iconResponse.ok) {
+                            log(`✅ Icon OK: ${icon.src}`);
+                        } else {
+                            log(`❌ Icon Error: ${icon.src} - Status: ${iconResponse.status}`);
+                        }
+                    } catch (error) {
+                        log(`❌ Icon Error: ${icon.src} - ${error.message}`);
+                    }
+                }
+            } catch (error) {
+                log(`❌ Manifest error: ${error.message}`);
+            }
+        });
+        
+        document.getElementById('testIconsBtn').addEventListener('click', async () => {
+            log('🧪 Testing Icons...');
+            const iconUrls = [
+                './dist/img/icons/android-icon-192x192.png',
+                './dist/img/icons/icon-512x512.png'
+            ];
+            
+            for (const iconUrl of iconUrls) {
+                try {
+                    const response = await fetch(iconUrl);
+                    if (response.ok) {
+                        const blob = await response.blob();
+                        log(`✅ Icon OK: ${iconUrl} (${blob.size} bytes)`);
+                    } else {
+                        log(`❌ Icon Error: ${iconUrl} - Status: ${response.status}`);
+                    }
+                } catch (error) {
+                    log(`❌ Icon Error: ${iconUrl} - ${error.message}`);
+                }
+            }
+        });
+        
+        document.getElementById('testServiceWorkerBtn').addEventListener('click', async () => {
+            log('🧪 Testing Service Worker...');
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('dist/service-worker-simple.js');
+                    log('✅ Service Worker registered');
+                    
+                    if (registration.active) {
+                        log('✅ Service Worker is active');
+                    } else if (registration.installing) {
+                        log('⏳ Service Worker is installing...');
+                    } else if (registration.waiting) {
+                        log('⏳ Service Worker is waiting...');
+                    }
+                } catch (error) {
+                    log(`❌ Service Worker error: ${error.message}`);
+                }
+            } else {
+                log('❌ Service Worker not supported');
+            }
+        });
+        
+        document.getElementById('clearLogBtn').addEventListener('click', () => {
+            logElement.textContent = '';
+        });
+        
+        // Install button
+        document.getElementById('installBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            log('👆 Install button clicked');
+            
+            if (deferredPrompt) {
+                log('📱 Showing install prompt...');
+                try {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        log('✅ User accepted installation');
+                        e.target.textContent = 'Instalado';
+                        e.target.disabled = true;
+                    } else {
+                        log('❌ User declined installation');
+                    }
+                    deferredPrompt = null;
+                } catch (error) {
+                    log(`❌ Installation error: ${error.message}`);
+                }
+            } else {
+                log('❌ No deferred prompt available');
+                alert('PWA não está sendo reconhecida como instalável. Verifique os requisitos.');
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Page loaded');
+            updateInfo();
+            checkPWARequirements();
+            
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('dist/service-worker-simple.js')
+                    .then(registration => {
+                        log('✅ Service Worker registered');
+                        updateInfo();
+                        checkPWARequirements();
+                    })
+                    .catch(error => {
+                        log(`❌ Service Worker registration failed: ${error.message}`);
+                    });
+            }
+        });
+        
+        // Log page load
+        log('📱 PWA Chrome Test Page Loaded');
+    </script>
+</body>
+</html>

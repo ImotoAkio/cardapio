@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste PWA - Tempero e Café</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="dist/manifest.json">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="dist/img/icons/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="dist/img/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="dist/img/icons/favicon-96x96.png">
+    <link rel="shortcut icon" href="dist/img/icons/favicon.ico">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" sizes="57x57" href="dist/img/icons/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="dist/img/icons/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="dist/img/icons/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="dist/img/icons/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="dist/img/icons/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="dist/img/icons/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="dist/img/icons/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="dist/img/icons/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="dist/img/icons/apple-icon-180x180.png">
+    <link rel="apple-touch-icon" href="dist/img/icons/apple-icon.png">
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileColor" content="#d3a74e">
+    <meta name="msapplication-TileImage" content="dist/img/icons/ms-icon-144x144.png">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    
+    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
+    <style>
+        body { background: #f8f9fa; }
+        .test-card { margin-bottom: 20px; }
+        .status-ok { color: #28a745; }
+        .status-error { color: #dc3545; }
+        .status-warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">🧪 Teste PWA - Tempero e Café</h4>
+                    </div>
+                    <div class="card-body">
+                        <div id="test-results">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="sr-only">Testando...</span>
+                                </div>
+                                <p class="mt-2">Executando testes...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Testes PWA
+        const tests = [
+            {
+                name: 'Service Worker',
+                test: () => 'serviceWorker' in navigator,
+                description: 'Verifica se Service Worker é suportado'
+            },
+            {
+                name: 'Manifest',
+                test: () => {
+                    const manifest = document.querySelector('link[rel="manifest"]');
+                    return manifest && manifest.href;
+                },
+                description: 'Verifica se o manifest está carregado'
+            },
+            {
+                name: 'HTTPS/Localhost',
+                test: () => location.protocol === 'https:' || location.hostname === 'localhost',
+                description: 'Verifica se está em HTTPS ou localhost'
+            },
+            {
+                name: 'Ícones PWA',
+                test: () => {
+                    const icons = document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]');
+                    return icons.length > 0;
+                },
+                description: 'Verifica se os ícones estão configurados'
+            },
+            {
+                name: 'Cache API',
+                test: () => 'caches' in window,
+                description: 'Verifica se Cache API é suportada'
+            },
+            {
+                name: 'Notification API',
+                test: () => 'Notification' in window,
+                description: 'Verifica se Notification API é suportada'
+            },
+            {
+                name: 'Background Sync',
+                test: () => 'serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype,
+                description: 'Verifica se Background Sync é suportado'
+            },
+            {
+                name: 'Push API',
+                test: () => 'PushManager' in window,
+                description: 'Verifica se Push API é suportada'
+            }
+        ];
+
+        // Executar testes
+        async function runTests() {
+            const resultsDiv = document.getElementById('test-results');
+            let html = '';
+
+            for (const test of tests) {
+                try {
+                    const result = await test.test();
+                    const statusClass = result ? 'status-ok' : 'status-error';
+                    const statusIcon = result ? '✅' : '❌';
+                    
+                    html += `
+                        <div class="test-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">${statusIcon} ${test.name}</h6>
+                                    <small class="text-muted">${test.description}</small>
+                                </div>
+                                <span class="${statusClass}">
+                                    ${result ? 'OK' : 'ERRO'}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                } catch (error) {
+                    html += `
+                        <div class="test-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">❌ ${test.name}</h6>
+                                    <small class="text-muted">${test.description}</small>
+                                </div>
+                                <span class="status-error">ERRO</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Teste adicional: Service Worker registrado
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                const swStatus = registration ? 'Registrado' : 'Não registrado';
+                const swIcon = registration ? '✅' : '⚠️';
+                const swClass = registration ? 'status-ok' : 'status-warning';
+                
+                html += `
+                    <div class="test-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${swIcon} Service Worker Status</h6>
+                                <small class="text-muted">Verifica se o Service Worker está registrado</small>
+                            </div>
+                            <span class="${swClass}">${swStatus}</span>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                html += `
+                    <div class="test-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">❌ Service Worker Status</h6>
+                                <small class="text-muted">Erro ao verificar Service Worker</small>
+                            </div>
+                            <span class="status-error">ERRO</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Teste adicional: Cache disponível
+            try {
+                const cacheNames = await caches.keys();
+                const cacheStatus = cacheNames.length > 0 ? `${cacheNames.length} caches` : 'Nenhum cache';
+                const cacheIcon = cacheNames.length > 0 ? '✅' : '⚠️';
+                const cacheClass = cacheNames.length > 0 ? 'status-ok' : 'status-warning';
+                
+                html += `
+                    <div class="test-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">${cacheIcon} Cache Status</h6>
+                                <small class="text-muted">Verifica se há caches disponíveis</small>
+                            </div>
+                            <span class="${cacheClass}">${cacheStatus}</span>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                html += `
+                    <div class="test-card">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">❌ Cache Status</h6>
+                                <small class="text-muted">Erro ao verificar cache</small>
+                            </div>
+                            <span class="status-error">ERRO</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('dist/service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                        // Executar testes após registrar o Service Worker
+                        setTimeout(runTests, 1000);
+                    })
+                    .catch(error => {
+                        console.error('Erro ao registrar Service Worker:', error);
+                        // Executar testes mesmo com erro
+                        runTests();
+                    });
+            });
+        } else {
+            // Executar testes mesmo sem Service Worker
+            window.addEventListener('load', runTests);
+        }
+    </script>
+</body>
+</html>

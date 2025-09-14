@@ -1,0 +1,64 @@
+/* =====================================================
+   🎨 AVATAR STYLES - TEMPERO E CAFÉ
+   ===================================================== */
+
+/* Avatar no Header */
+.user-profile-icon img {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 2px solid #fff !important;
+    display: block !important;
+}
+
+/* Avatar no Menu Lateral */
+.sidenav-profile .user-profile img {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 3px solid #fff !important;
+    display: block !important;
+}
+
+/* Avatar Principal na Página de Perfil */
+.profile-wrapper-area .user-profile img {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 3px solid #fff !important;
+    display: block !important;
+}
+
+/* Avatares no Modal de Seleção */
+.avatar-preview {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 3px solid transparent !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+/* Avatar selecionado no modal */
+.avatar-preview[style*="border: 3px solid #007bff"] {
+    border: 3px solid #007bff !important;
+}
+
+/* Garantir que não haja distorção */
+.user-profile-icon,
+.sidenav-profile .user-profile,
+.profile-wrapper-area .user-profile {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Forçar formato circular em todos os avatares */
+img[src*="user/"] {
+    border-radius: 50% !important;
+    object-fit: cover !important;
+}

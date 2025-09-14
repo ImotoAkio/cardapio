@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Ícones PWA - Tempero e Café</title>
+    <link rel="manifest" href="dist/manifest-simple.json">
+    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .log {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .btn-test {
+            margin: 5px;
+        }
+        .icon-test {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .icon-test.ok {
+            border-color: green;
+            background: #f0fff0;
+        }
+        .icon-test.error {
+            border-color: red;
+            background: #fff0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Ícones PWA</h1>
+    
+    <div class="test-section">
+        <h3>📱 Informações</h3>
+        <div id="info" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 Teste de Ícones</h3>
+        <div id="iconTests"></div>
+        <button id="testAllIconsBtn" class="btn btn-primary btn-test">Testar Todos os Ícones</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>📋 Log de Eventos</h3>
+        <div id="log" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 Botão de Instalação</h3>
+        <button id="installBtn" class="btn btn-success w-100">Instalar Agora</button>
+    </div>
+
+    <script src="dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let deferredPrompt;
+        let logElement = document.getElementById('log');
+        let infoElement = document.getElementById('info');
+        let iconTestsElement = document.getElementById('iconTests');
+        
+        function log(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateInfo() {
+            const info = `
+URL: ${location.href}
+Protocol: ${location.protocol}
+Hostname: ${location.hostname}
+Pathname: ${location.pathname}
+Standalone: ${window.navigator.standalone}
+Display Mode: ${window.matchMedia('(display-mode: standalone)').matches}
+Service Worker Support: ${'serviceWorker' in navigator}
+Cache API Support: ${'caches' in window}
+Before Install Prompt: ${deferredPrompt ? 'Available' : 'Not Available'}
+            `;
+            infoElement.textContent = info;
+        }
+        
+        function addIconTest(iconUrl, status, details = '') {
+            const div = document.createElement('div');
+            div.className = `icon-test ${status}`;
+            div.innerHTML = `
+                <strong>${iconUrl}:</strong> 
+                <span style="color: ${status === 'ok' ? 'green' : 'red'}; font-weight: bold;">
+                    ${status === 'ok' ? '✅ OK' : '❌ ERROR'}
+                </span>
+                ${details ? `<br><small>${details}</small>` : ''}
+            `;
+            iconTestsElement.appendChild(div);
+        }
+        
+        async function testIcon(iconUrl) {
+            try {
+                const response = await fetch(iconUrl);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    log(`✅ Icon OK: ${iconUrl} (${blob.size} bytes)`);
+                    addIconTest(iconUrl, 'ok', `${blob.size} bytes`);
+                    return true;
+                } else {
+                    log(`❌ Icon Error: ${iconUrl} - Status: ${response.status}`);
+                    addIconTest(iconUrl, 'error', `Status: ${response.status}`);
+                    return false;
+                }
+            } catch (error) {
+                log(`❌ Icon Error: ${iconUrl} - ${error.message}`);
+                addIconTest(iconUrl, 'error', error.message);
+                return false;
+            }
+        }
+        
+        async function testAllIcons() {
+            log('🧪 Testing all icons...');
+            iconTestsElement.innerHTML = '';
+            
+            const iconUrls = [
+                './dist/img/icons/android-icon-192x192.png',
+                './dist/img/icons/icon-512x512.png',
+                './dist/img/icons/favicon-16x16.png',
+                './dist/img/icons/favicon-32x32.png',
+                './dist/img/icons/favicon-96x96.png',
+                './dist/img/icons/apple-icon-180x180.png',
+                './dist/img/icons/icon-192x192.png',
+                './dist/img/icons/icon-512x512.png'
+            ];
+            
+            let allOk = true;
+            for (const iconUrl of iconUrls) {
+                const isOk = await testIcon(iconUrl);
+                if (!isOk) allOk = false;
+            }
+            
+            if (allOk) {
+                log('✅ All icons are accessible!');
+            } else {
+                log('❌ Some icons are not accessible!');
+            }
+        }
+        
+        // Event listeners
+        window.addEventListener('beforeinstallprompt', (e) => {
+            log('✅ beforeinstallprompt event fired!');
+            e.preventDefault();
+            deferredPrompt = e;
+            updateInfo();
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            log('✅ App installed successfully!');
+            updateInfo();
+        });
+        
+        // Test button
+        document.getElementById('testAllIconsBtn').addEventListener('click', testAllIcons);
+        
+        // Install button
+        document.getElementById('installBtn').addEventListener('click', async (e) => {
+            e.preventDefault();
+            log('👆 Install button clicked');
+            
+            if (deferredPrompt) {
+                log('📱 Showing install prompt...');
+                try {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        log('✅ User accepted installation');
+                        e.target.textContent = 'Instalado';
+                        e.target.disabled = true;
+                    } else {
+                        log('❌ User declined installation');
+                    }
+                    deferredPrompt = null;
+                } catch (error) {
+                    log(`❌ Installation error: ${error.message}`);
+                }
+            } else {
+                log('❌ No deferred prompt available');
+                alert('PWA não está sendo reconhecida como instalável. Verifique os requisitos.');
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Page loaded');
+            updateInfo();
+            
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('dist/service-worker-simple.js')
+                    .then(registration => {
+                        log('✅ Service Worker registered');
+                        updateInfo();
+                    })
+                    .catch(error => {
+                        log(`❌ Service Worker registration failed: ${error.message}`);
+                    });
+            }
+            
+            // Test icons automatically
+            setTimeout(testAllIcons, 2000);
+        });
+        
+        // Log page load
+        log('📱 PWA Icon Test Page Loaded');
+    </script>
+</body>
+</html>

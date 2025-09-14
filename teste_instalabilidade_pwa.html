@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste PWA Instalabilidade - Tempero e Café</title>
+    <link rel="manifest" href="dist/manifest.json">
+    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .log {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .btn-test {
+            margin: 5px;
+        }
+        .status-ok { color: green; font-weight: bold; }
+        .status-error { color: red; font-weight: bold; }
+        .status-warning { color: orange; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste PWA Instalabilidade</h1>
+    
+    <div class="test-section">
+        <h3>📱 Informações do Dispositivo</h3>
+        <div id="deviceInfo" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🔧 Status da PWA</h3>
+        <div id="pwaStatus" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>📋 Log de Eventos</h3>
+        <div id="log" class="log"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 Testes</h3>
+        <button id="testInstallBtn" class="btn btn-primary btn-test">Testar Instalação</button>
+        <button id="testServiceWorkerBtn" class="btn btn-secondary btn-test">Testar Service Worker</button>
+        <button id="testManifestBtn" class="btn btn-info btn-test">Testar Manifest</button>
+        <button id="clearLogBtn" class="btn btn-warning btn-test">Limpar Log</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>🎯 Botão de Instalação</h3>
+        <button id="installSuha" class="btn btn-success w-100">Instalar Agora</button>
+    </div>
+
+    <script src="dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let deferredPrompt;
+        let logElement = document.getElementById('log');
+        let deviceInfoElement = document.getElementById('deviceInfo');
+        let pwaStatusElement = document.getElementById('pwaStatus');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            logElement.textContent += logEntry;
+            logElement.scrollTop = logElement.scrollHeight;
+            console.log(message);
+        }
+        
+        function updateDeviceInfo() {
+            const info = `
+User Agent: ${navigator.userAgent}
+Standalone: ${window.navigator.standalone}
+Display Mode: ${window.matchMedia('(display-mode: standalone)').matches}
+Service Worker Support: ${'serviceWorker' in navigator}
+Cache API Support: ${'caches' in window}
+Before Install Prompt: ${deferredPrompt ? 'Available' : 'Not Available'}
+            `;
+            deviceInfoElement.textContent = info;
+        }
+        
+        function updatePWAStatus() {
+            let status = '';
+            
+            // Verificar Service Worker
+            if ('serviceWorker' in navigator) {
+                status += '✅ Service Worker suportado\n';
+            } else {
+                status += '❌ Service Worker não suportado\n';
+            }
+            
+            // Verificar Cache API
+            if ('caches' in window) {
+                status += '✅ Cache API suportada\n';
+            } else {
+                status += '❌ Cache API não suportada\n';
+            }
+            
+            // Verificar Manifest
+            if (document.querySelector('link[rel="manifest"]')) {
+                status += '✅ Manifest link encontrado\n';
+            } else {
+                status += '❌ Manifest link não encontrado\n';
+            }
+            
+            // Verificar beforeinstallprompt
+            if (deferredPrompt) {
+                status += '✅ PWA instalável (beforeinstallprompt disponível)\n';
+            } else {
+                status += '❌ PWA não instalável (beforeinstallprompt não disponível)\n';
+            }
+            
+            // Verificar se já está instalado
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+                status += '✅ App já instalado\n';
+            } else {
+                status += 'ℹ️ App não instalado\n';
+            }
+            
+            pwaStatusElement.textContent = status;
+        }
+        
+        // Event listeners
+        window.addEventListener('beforeinstallprompt', (e) => {
+            log('✅ beforeinstallprompt event fired', 'success');
+            e.preventDefault();
+            deferredPrompt = e;
+            updateDeviceInfo();
+            updatePWAStatus();
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            log('✅ App installed successfully!', 'success');
+            updateDeviceInfo();
+            updatePWAStatus();
+        });
+        
+        // Test buttons
+        document.getElementById('testInstallBtn').addEventListener('click', async () => {
+            log('🧪 Testing installation...');
+            if (deferredPrompt) {
+                try {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    log(`📱 Installation outcome: ${outcome}`, outcome === 'accepted' ? 'success' : 'warning');
+                } catch (error) {
+                    log(`❌ Installation error: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ No deferred prompt available', 'error');
+            }
+        });
+        
+        document.getElementById('testServiceWorkerBtn').addEventListener('click', async () => {
+            log('🧪 Testing Service Worker...');
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.register('dist/service-worker.js');
+                    log('✅ Service Worker registered', 'success');
+                    
+                    if (registration.active) {
+                        log('✅ Service Worker is active', 'success');
+                    } else if (registration.installing) {
+                        log('⏳ Service Worker is installing...', 'info');
+                    } else if (registration.waiting) {
+                        log('⏳ Service Worker is waiting...', 'info');
+                    }
+                } catch (error) {
+                    log(`❌ Service Worker error: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ Service Worker not supported', 'error');
+            }
+        });
+        
+        document.getElementById('testManifestBtn').addEventListener('click', async () => {
+            log('🧪 Testing Manifest...');
+            try {
+                const response = await fetch('dist/manifest.json');
+                const manifest = await response.json();
+                log('✅ Manifest loaded successfully', 'success');
+                log(`📱 App name: ${manifest.name}`, 'info');
+                log(`📱 App short name: ${manifest.short_name}`, 'info');
+                log(`📱 Icons count: ${manifest.icons.length}`, 'info');
+                log(`📱 Display mode: ${manifest.display}`, 'info');
+            } catch (error) {
+                log(`❌ Manifest error: ${error.message}`, 'error');
+            }
+        });
+        
+        document.getElementById('clearLogBtn').addEventListener('click', () => {
+            logElement.textContent = '';
+        });
+        
+        // Install button
+        document.getElementById('installSuha').addEventListener('click', async (e) => {
+            e.preventDefault();
+            log('👆 Install button clicked');
+            
+            if (deferredPrompt) {
+                log('📱 Showing install prompt...');
+                try {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        log('✅ User accepted installation', 'success');
+                        e.target.textContent = 'Instalado';
+                        e.target.disabled = true;
+                        e.target.classList.add('btn-success');
+                        e.target.classList.remove('btn-primary');
+                    } else {
+                        log('❌ User declined installation', 'warning');
+                    }
+                    deferredPrompt = null;
+                } catch (error) {
+                    log(`❌ Installation error: ${error.message}`, 'error');
+                }
+            } else {
+                log('❌ No deferred prompt available', 'error');
+                if (window.navigator.standalone === false) {
+                    alert('Para instalar este app no iOS:\n1. Toque no botão Compartilhar\n2. Selecione "Adicionar à Tela Inicial"');
+                }
+            }
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Page loaded');
+            updateDeviceInfo();
+            updatePWAStatus();
+            
+            // Register Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('dist/service-worker.js')
+                    .then(registration => {
+                        log('✅ Service Worker registered', 'success');
+                        updatePWAStatus();
+                    })
+                    .catch(error => {
+                        log(`❌ Service Worker registration failed: ${error.message}`, 'error');
+                    });
+            }
+        });
+        
+        // Log page load
+        log('📱 PWA Instalabilidade Test Page Loaded');
+    </script>
+</body>
+</html>

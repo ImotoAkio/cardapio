@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline - Tempero e Café</title>
+    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="dist/css/tabler-icons.min.css">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #d3a74e 0%, #b8941f 100%);
+            color: white;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+        .offline-container { 
+            min-height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            padding: 20px;
+        }
+        .offline-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .btn-retry {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-retry:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .logo-offline {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: brightness(0) invert(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-card">
+            <img src="dist/img/core-img/logo_cafe.png" alt="Tempero e Café" class="logo-offline">
+            <div class="offline-icon">
+                <i class="ti ti-wifi-off"></i>
+            </div>
+            <h2 class="mb-3">Você está offline</h2>
+            <p class="mb-4">Verifique sua conexão com a internet e tente novamente.</p>
+            <button onclick="window.location.reload()" class="btn btn-retry">
+                <i class="ti ti-refresh me-2"></i>Tentar Novamente
+            </button>
+            <div class="mt-4">
+                <small class="text-white-50">
+                    <i class="ti ti-info-circle me-1"></i>
+                    Algumas funcionalidades podem estar disponíveis offline
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Verificar conexão periodicamente
+        function checkConnection() {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }
+
+        // Verificar conexão a cada 5 segundos
+        setInterval(checkConnection, 5000);
+
+        // Verificar quando a conexão voltar
+        window.addEventListener('online', function() {
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
