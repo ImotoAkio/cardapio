@@ -32,10 +32,12 @@ if (empty($cartItems)) {
 $message = '';
 $messageType = '';
 
-// Função específica para checkout que sempre inclui o prefixo correto
+// Função específica para checkout que usa getBasePath()
 function getFirstProductImageForCheckout($imagesJson) {
+    $basePath = getBasePath();
+    
     if (empty($imagesJson)) {
-        return '/cardapio/dist/img/product/default.png';
+        return $basePath . 'dist/img/product/default.png';
     }
     
     $images = json_decode($imagesJson, true);
@@ -48,23 +50,23 @@ function getFirstProductImageForCheckout($imagesJson) {
     }
     
     if (!is_array($images) || empty($images)) {
-        return '/cardapio/dist/img/product/default.png';
+        return $basePath . 'dist/img/product/default.png';
     }
     
     $firstImage = $images[0];
     
-    // Se já tem 'dist/' no caminho, adiciona apenas o prefixo
+    // Se já tem 'dist/' no caminho, não adiciona novamente
     if (strpos($firstImage, 'dist/') === 0) {
-        return '/cardapio/' . $firstImage;
+        return $basePath . $firstImage;
     }
     
-    // Se tem 'img/' no caminho, adiciona 'dist/' e o prefixo
+    // Se tem 'img/' no caminho, adiciona 'dist/'
     if (strpos($firstImage, 'img/') === 0) {
-        return '/cardapio/dist/' . $firstImage;
+        return $basePath . 'dist/' . $firstImage;
     }
     
     // Se é apenas o nome do arquivo, monta o caminho completo
-    return '/cardapio/dist/img/product/' . basename($firstImage);
+    return $basePath . 'dist/img/product/' . basename($firstImage);
 }
 
 // Processar finalização do pedido
@@ -168,45 +170,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Title -->
     <title>Tempero e Café - Produtos Naturais e Orgânicos</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="dist/img/icons/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="dist/img/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="dist/img/icons/favicon-96x96.png">
-    <link rel="shortcut icon" href="dist/img/icons/favicon.ico">
-    <link rel="apple-touch-icon" sizes="57x57" href="dist/img/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="dist/img/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="dist/img/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="dist/img/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="dist/img/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="dist/img/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="dist/img/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="dist/img/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="dist/img/icons/apple-icon-180x180.png">
-    <link rel="apple-touch-icon" href="dist/img/icons/apple-icon.png">
-    <meta name="msapplication-TileColor" content="#d3a74e">
-    <meta name="msapplication-TileImage" content="dist/img/icons/ms-icon-144x144.png">
-    <meta name="msapplication-config" content="browserconfig.xml">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-    <!-- Favicon -->
-    
-    <!-- Apple Touch Icon -->
-    
-    
-    
-    
+    <link rel="shortcut icon" href="<?php echo getBasePath(); ?>dist/img/core-img/logo_cafe.png">
     <!-- CSS Libraries -->
-    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="dist/css/tabler-icons.min.css">
-    <link rel="stylesheet" href="dist/css/animate.css">
-    <link rel="stylesheet" href="dist/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="dist/css/magnific-popup.css">
-    <link rel="stylesheet" href="dist/css/nice-select.css">
+    <link rel="stylesheet" href="<?php echo getBasePath(); ?>dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<?php echo getBasePath(); ?>dist/css/tabler-icons.min.css">
+    <link rel="stylesheet" href="<?php echo getBasePath(); ?>dist/css/animate.css">
+    <link rel="stylesheet" href="<?php echo getBasePath(); ?>dist/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="<?php echo getBasePath(); ?>dist/css/magnific-popup.css">
+    <link rel="stylesheet" href="<?php echo getBasePath(); ?>dist/css/nice-select.css">
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="dist/style.css">
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="dist/manifest.json">
+    <link rel="stylesheet" href="<?php echo getBasePath(); ?>dist/style.css">
 </head>
 <body>
     <!-- Preloader-->
@@ -239,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="offcanvas-body">
             <!-- Sidenav Profile-->
             <div class="sidenav-profile">
-                <div class="user-profile"><img src="dist/img/bg-img/9.jpg" alt=""></div>
+                <div class="user-profile"><img src="<?php echo getBasePath(); ?>dist/img/bg-img/user/<?php echo htmlspecialchars($user['avatar'] ?? '1.png'); ?>" alt="Avatar" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 3px solid #fff;"></div>
                 <div class="user-info">
                     <h5 class="user-name mb-1 text-white"><?php echo htmlspecialchars($user['full_name']); ?></h5>
                     <p class="available-balance text-white">Saldo Atual R$<span class="counter">0,00</span></p>
@@ -432,20 +405,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     
     <!-- All JavaScript Files-->
-    <script src="dist/js/bootstrap.bundle.min.js"></script>
-    <script src="dist/js/jquery.min.js"></script>
-    <script src="dist/js/waypoints.min.js"></script>
-    <script src="dist/js/jquery.easing.min.js"></script>
-    <script src="dist/js/owl.carousel.min.js"></script>
-    <script src="dist/js/jquery.magnific-popup.min.js"></script>
-    <script src="dist/js/jquery.counterup.min.js"></script>
-    <script src="dist/js/jquery.countdown.min.js"></script>
-    <script src="dist/js/jquery.passwordstrength.js"></script>
-    <script src="dist/js/jquery.nice-select.min.js"></script>
-    <script src="dist/js/theme-switching.js"></script>
-    <script src="dist/js/no-internet.js"></script>
-    <script src="dist/js/active.js"></script>
-    <script src="js/cart.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/bootstrap.bundle.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/jquery.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/waypoints.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/jquery.easing.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/owl.carousel.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/jquery.magnific-popup.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/jquery.counterup.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/jquery.countdown.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/jquery.passwordstrength.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/jquery.nice-select.min.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/theme-switching.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/no-internet.js"></script>
+    <script src="<?php echo getBasePath(); ?>dist/js/active.js"></script>
+    <script src="<?php echo getBasePath(); ?>js/cart.js"></script>
     
     <script>
         // Atualizar contador do carrinho
