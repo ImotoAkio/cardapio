@@ -99,3 +99,20 @@ sess_*
 
 # Arquivos de upload temporário
 php_upload_*
+
+# Arquivos de teste e debug
+test.php
+diagnostico.php
+home_teste.php
+*_teste.php
+*_debug.php
+
+# Arquivos de documentação temporária
+*_limpeza*.md
+*_deploy*.md
+*_solucao*.md
+*_hosting*.md
+
+# Arquivos de configuração específicos
+config_hosting.php
+.htaccess_hosting
