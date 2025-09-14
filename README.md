@@ -3,16 +3,15 @@
 [![PHP](https://img.shields.io/badge/PHP-7.4+-blue.svg)](https://php.net)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0+-orange.svg)](https://mysql.com)
 [![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-green.svg)](https://getbootstrap.com)
-[![PWA](https://img.shields.io/badge/PWA-Ready-purple.svg)](https://web.dev/progressive-web-apps/)
 
 ## 📋 Sobre o Projeto
 
-O **Tempero e Café** é uma plataforma de e-commerce especializada em produtos naturais, orgânicos e suplementos. Desenvolvido como uma Progressive Web App (PWA), oferece uma experiência mobile-first com funcionalidades completas de carrinho, pedidos e gerenciamento administrativo.
+O **Tempero e Café** é uma plataforma de e-commerce especializada em produtos naturais, orgânicos e suplementos. Desenvolvido com foco em experiência mobile-first, oferece funcionalidades completas de carrinho, pedidos e gerenciamento administrativo.
 
 ### ✨ Principais Características
 
 - 🛍️ **E-commerce Completo**: Catálogo de produtos, carrinho, checkout e gestão de pedidos
-- 📱 **PWA Mobile-First**: Interface otimizada para dispositivos móveis
+- 📱 **Interface Mobile-First**: Interface otimizada para dispositivos móveis
 - 🔐 **Sistema de Autenticação**: Login, registro e gestão de perfis
 - 🎨 **Interface Moderna**: Design responsivo com Bootstrap 5
 - 📊 **Painel Administrativo**: Gestão completa de produtos, categorias e pedidos
@@ -46,11 +45,6 @@ O **Tempero e Café** é uma plataforma de e-commerce especializada em produtos 
 - **Bootstrap 5.3** - Framework CSS
 - **JavaScript ES6+** - Interatividade
 - **jQuery** - Manipulação DOM
-
-### PWA & Mobile
-- **Service Worker** - Cache offline
-- **Web App Manifest** - Instalação como app
-- **Responsive Design** - Adaptação mobile
 
 ### Ferramentas de Desenvolvimento
 - **Gulp** - Automação de tarefas
@@ -125,12 +119,6 @@ npm run dev
 - Controle de pedidos
 - Relatórios de vendas
 
-### 📱 PWA Features
-- Instalação como aplicativo
-- Funcionamento offline
-- Notificações push
-- Interface mobile otimizada
-
 ## 📚 Documentação Detalhada
 
 Consulte a pasta `documentacao/` para informações completas:
@@ -141,7 +129,6 @@ Consulte a pasta `documentacao/` para informações completas:
 - [⚙️ Instalação e Configuração](documentacao/instalacao.md)
 - [🎨 Frontend e Interface](documentacao/frontend.md)
 - [👨‍💼 Painel Administrativo](documentacao/admin.md)
-- [📱 PWA e Mobile](documentacao/pwa.md)
 - [🛠️ Guia de Desenvolvimento](documentacao/desenvolvimento.md)
 
 ## 🔧 Configuração de Desenvolvimento

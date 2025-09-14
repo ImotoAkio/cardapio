@@ -23,25 +23,7 @@ session_start();
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet">
     <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="dist/img/icons/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="dist/img/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="dist/img/icons/favicon-96x96.png">
-    <link rel="shortcut icon" href="dist/img/icons/favicon.ico">
-    <!-- Apple Touch Icon -->
-    <link rel="apple-touch-icon" sizes="57x57" href="dist/img/icons/apple-icon-57x57.png">
-    <link rel="apple-touch-icon" sizes="60x60" href="dist/img/icons/apple-icon-60x60.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="dist/img/icons/apple-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="76x76" href="dist/img/icons/apple-icon-76x76.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="dist/img/icons/apple-icon-114x114.png">
-    <link rel="apple-touch-icon" sizes="120x120" href="dist/img/icons/apple-icon-120x120.png">
-    <link rel="apple-touch-icon" sizes="144x144" href="dist/img/icons/apple-icon-144x144.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="dist/img/icons/apple-icon-152x152.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="dist/img/icons/apple-icon-180x180.png">
-    <link rel="apple-touch-icon" href="dist/img/icons/apple-icon.png">
-    <!-- Microsoft Tiles -->
-    <meta name="msapplication-TileColor" content="#d3a74e">
-    <meta name="msapplication-TileImage" content="dist/img/icons/ms-icon-144x144.png">
-    <meta name="msapplication-config" content="browserconfig.xml">
+    <link rel="shortcut icon" href="dist/img/core-img/logo_cafe.png">
     <!-- CSS Libraries -->
     <link rel="stylesheet" href="dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="dist/css/tabler-icons.min.css">
@@ -52,8 +34,6 @@ session_start();
     <!-- Stylesheet -->
     <link rel="stylesheet" href="dist/style.css">
     <link rel="stylesheet" href="dist/css/avatar-styles.css">
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="dist/manifest.json">
   </head>
   <body>
     <!-- Preloader-->
@@ -64,18 +44,6 @@ session_start();
     </div>
     <!-- Header Area -->
     <?php include 'includes/header.php'; ?>
-    <!-- PWA Install Alert -->
-    <div class="toast pwa-install-alert shadow bg-white" id="installWrap" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="10000" data-bs-autohide="false">
-      <div class="toast-body">
-        <div class="content d-flex align-items-center mb-2">
-          <img src="<?php echo getBasePath(); ?>dist/img/icons/android-icon-72x72.png" alt="" style="width: 40px; height: 40px; margin-right: 10px;">
-          <h6 class="mb-0">Bem-vindo ao Tempero e Café</h6>
-          <button class="btn-close ms-auto" type="button" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <span class="mb-2 d-block">Clique no botão <strong class="mx-1">Instalar Agora</strong> e aproveite como um aplicativo regular.</span>
-        <button class="btn btn-sm btn-primary w-100" id="installSuha" style="font-weight: bold;">Instalar Agora</button>
-      </div>
-    </div>
     <div class="page-content-wrapper">
       <!-- Search Form-->
       <div class="container">
@@ -617,163 +585,16 @@ session_start();
         }
     </style>
     
-    <!-- PWA Install Toast Script -->
-    <script>
-        // PWA Installation Logic
-        let deferredPrompt;
-        let installButton;
-        
-        // Função de log
-        function log(message) {
-            console.log('PWA: ' + message);
-        }
-        
-        // Debug para mobile
-        log('Page loaded');
-        log('User Agent: ' + navigator.userAgent);
-        log('Standalone: ' + window.navigator.standalone);
-        log('Display mode: ' + window.matchMedia('(display-mode: standalone)').matches);
-        log('Service Worker support: ' + ('serviceWorker' in navigator));
-        log('Cache API support: ' + ('caches' in window));
-        
-        // Aguardar beforeinstallprompt
-        window.addEventListener('beforeinstallprompt', (e) => {
-            log('✅ beforeinstallprompt event fired');
-            e.preventDefault();
-            deferredPrompt = e;
-            log('✅ PWA instalável detectada!');
-        });
-        
-        // Log quando appinstalled
-        window.addEventListener('appinstalled', () => {
-            log('✅ App installed successfully!');
-        });
-        
-        // Verificar Service Worker
-        async function checkServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                try {
-                    const registration = await navigator.serviceWorker.register('dist/service-worker.js');
-                    log('✅ Service Worker registrado');
-                    
-                    if (registration.active) {
-                        log('✅ Service Worker ativo');
-                    } else if (registration.installing) {
-                        log('⏳ Service Worker instalando...');
-                    } else if (registration.waiting) {
-                        log('⏳ Service Worker aguardando...');
-                    }
-                } catch (error) {
-                    log('❌ Erro ao registrar Service Worker: ' + error.message);
-                }
-            } else {
-                log('❌ Service Worker não suportado');
-            }
-        }
-        
-        // Função para configurar o botão de instalação
-        function setupInstallButton() {
-            installButton = document.getElementById('installSuha');
-            
-            if (installButton) {
-                log('✅ Install button found');
-                
-                // Atualizar texto do botão
-                function updateInstallButton() {
-                    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-                        installButton.textContent = 'Instalado';
-                        installButton.disabled = true;
-                        installButton.classList.add('btn-success');
-                        installButton.classList.remove('btn-primary');
-                    } else {
-                        installButton.textContent = 'Instalar Agora';
-                        installButton.disabled = false;
-                        installButton.classList.add('btn-primary');
-                        installButton.classList.remove('btn-success');
-                    }
-                }
-                
-                // Event listener para clique
-                installButton.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    log('👆 Install button clicked');
-                    
-                    if (installButton.textContent === 'Instalado') {
-                        return;
-                    }
-                    
-                    if (deferredPrompt) {
-                        log('📱 Showing install prompt');
-                        try {
-                            deferredPrompt.prompt();
-                            const { outcome } = await deferredPrompt.userChoice;
-                            
-                            if (outcome === 'accepted') {
-                                log('✅ User accepted installation');
-                                installButton.textContent = 'Instalado';
-                                installButton.disabled = true;
-                                installButton.classList.add('btn-success');
-                                installButton.classList.remove('btn-primary');
-                            } else {
-                                log('❌ User declined installation');
-                                installButton.textContent = 'Instalar Agora';
-                            }
-                            deferredPrompt = null;
-                        } catch (error) {
-                            log('❌ Error during installation: ' + error.message);
-                        }
-                    } else {
-                        log('❌ No deferred prompt available');
-                        // Fallback para iOS Safari
-                        if (window.navigator.standalone === false) {
-                            alert('Para instalar este app no iOS:\n1. Toque no botão Compartilhar\n2. Selecione "Adicionar à Tela Inicial"');
-                        } else {
-                            alert('Instalação não disponível neste momento. Tente novamente mais tarde.');
-                        }
-                    }
-                });
-                
-                updateInstallButton();
-                window.matchMedia('(display-mode: standalone)').addEventListener('change', updateInstallButton);
-            } else {
-                log('❌ Install button not found');
-            }
-        }
-        
-        // Mostrar toast de instalação PWA
-        function showInstallToast() {
-            const installWrap = document.getElementById('installWrap');
-            if (installWrap) {
-                try {
-                    const toast = new bootstrap.Toast(installWrap);
-                    toast.show();
-                    log('✅ Install toast shown');
-                } catch (error) {
-                    log('❌ Error showing toast: ' + error.message);
-                }
-            }
-        }
-        
-        // Aguardar DOM carregar
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                log('✅ DOM loaded');
-                setupInstallButton();
-                checkServiceWorker();
-                setTimeout(showInstallToast, 2000);
-            });
-        } else {
-            log('✅ DOM already loaded');
-            setupInstallButton();
-            checkServiceWorker();
-            setTimeout(showInstallToast, 2000);
-        }
-        
-        // Também executar quando a página carregar completamente
-        window.addEventListener('load', function() {
-            log('✅ Window loaded');
-            setupInstallButton();
-        });
-    </script>
+    <script src="dist/js/jquery.min.js"></script>
+    <script src="dist/js/bootstrap.bundle.min.js"></script>
+    <script src="dist/js/waypoints.min.js"></script>
+    <script src="dist/js/jquery.easing.min.js"></script>
+    <script src="dist/js/jquery.counterup.min.js"></script>
+    <script src="dist/js/jquery.countdown.min.js"></script>
+    <script src="dist/js/owl.carousel.min.js"></script>
+    <script src="dist/js/jquery.magnific-popup.min.js"></script>
+    <script src="dist/js/jquery.nice-select.min.js"></script>
+    <script src="dist/js/active.js"></script>
+    <script src="js/cart.js"></script>
   </body>
 </html>
